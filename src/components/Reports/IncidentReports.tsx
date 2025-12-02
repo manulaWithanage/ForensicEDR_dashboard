@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Printer, Shield, MapPin, Loader2, AlertTriangle, ArrowLeft, FileText, ArrowUpDown } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Printer, Shield, MapPin, Loader2, AlertTriangle, ArrowLeft, FileText } from 'lucide-react';
 import { useCrashes, useCrash } from '../../hooks/useCrashData';
 import { formatters } from '../../utils/formatters';
 import TelematicsCharts from '../Analytics/TelematicsCharts';

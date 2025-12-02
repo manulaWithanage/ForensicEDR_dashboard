@@ -4,7 +4,7 @@ import type { CrashEvent, EvidenceCustodyLog, ReportData, CrashFilters } from '.
 // Configuration
 // Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://forensicedr-cloud.onrender.com/api/v1';
-const USE_MOCK_DATA = false; // Switched to real API
+
 
 const api = axios.create({
     baseURL: API_BASE_URL,
