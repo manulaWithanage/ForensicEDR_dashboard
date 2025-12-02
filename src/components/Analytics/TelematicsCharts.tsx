@@ -136,25 +136,46 @@ const TelematicsCharts: React.FC<TelematicsChartsProps> = ({ data }) => {
                 <Plot
                     data={[
                         {
-                            x: rpm,
-                            y: load,
-                            mode: 'markers',
+                            x: timestamps,
+                            y: rpm,
                             type: 'scatter',
-                            name: 'Engine Load',
-                            marker: {
-                                color: throttle,
-                                colorscale: 'Viridis',
-                                size: 6,
-                                showscale: true,
-                                colorbar: { title: { text: 'Throttle %' } }
-                            }
+                            mode: 'lines',
+                            name: 'Engine RPM',
+                            line: { color: '#38bdf8', width: 2 }
+                        },
+                        {
+                            x: timestamps,
+                            y: load,
+                            type: 'scatter',
+                            mode: 'lines',
+                            name: 'Engine Load %',
+                            yaxis: 'y2',
+                            line: { color: '#4ade80', width: 2, dash: 'dot' }
+                        },
+                        {
+                            x: timestamps,
+                            y: throttle,
+                            type: 'scatter',
+                            mode: 'lines',
+                            name: 'Throttle %',
+                            yaxis: 'y2',
+                            line: { color: '#facc15', width: 2 }
                         }
                     ]}
                     layout={{
                         ...darkLayout,
                         height: 350,
-                        xaxis: { ...darkLayout.xaxis, title: { text: 'Engine RPM' } },
-                        yaxis: { ...darkLayout.yaxis, title: { text: 'Engine Load %' } }
+                        xaxis: { ...darkLayout.xaxis, title: { text: 'Time' } },
+                        yaxis: { ...darkLayout.yaxis, title: { text: 'Engine RPM' } },
+                        yaxis2: {
+                            title: { text: 'Percentage %', font: { color: '#94a3b8' } },
+                            overlaying: 'y',
+                            side: 'right',
+                            gridcolor: 'rgba(0,0,0,0)', // Hide grid for secondary axis to avoid clutter
+                            range: [0, 100]
+                        },
+                        legend: { orientation: 'h', y: -0.2 },
+                        margin: { t: 30, r: 60, b: 40, l: 60 } // Increased margins for axis titles
                     }}
                     useResizeHandler
                     className="w-full"

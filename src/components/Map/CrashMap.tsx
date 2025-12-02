@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { CrashEvent } from '../../types';
 import { formatters } from '../../utils/formatters';
@@ -24,11 +24,41 @@ interface CrashMapProps {
     onMarkerClick?: (crash: CrashEvent) => void;
 }
 
+// Component to handle map bounds
+const MapBounds: React.FC<{ crashes: CrashEvent[] }> = ({ crashes }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (crashes.length > 0) {
+            const bounds = L.latLngBounds(crashes.map(c => [c.location.coordinates[1], c.location.coordinates[0]]));
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+    }, [crashes, map]);
+
+    return null;
+};
+
 const CrashMap: React.FC<CrashMapProps> = ({ crashes, onMarkerClick }) => {
     // Center map on the first crash or default to Colombo
     const center: [number, number] = crashes.length > 0
         ? [crashes[0].location.coordinates[1], crashes[0].location.coordinates[0]]
         : [6.9271, 79.8612];
+
+    // Jitter logic to handle overlapping markers
+    const jitteredCrashes = useMemo(() => {
+        return crashes.map((crash, index) => {
+            // Simple deterministic jitter based on index
+            // Offset by ~0.0001 degrees (approx 10 meters)
+            const offsetLat = (index % 5) * 0.0001 - 0.0002;
+            const offsetLon = (Math.floor(index / 5) % 5) * 0.0001 - 0.0002;
+
+            return {
+                ...crash,
+                displayLat: crash.location.coordinates[1] + offsetLat,
+                displayLon: crash.location.coordinates[0] + offsetLon
+            };
+        });
+    }, [crashes]);
 
     return (
         <div className="h-[500px] w-full rounded-xl overflow-hidden border border-slate-700 z-0">
@@ -43,10 +73,11 @@ const CrashMap: React.FC<CrashMapProps> = ({ crashes, onMarkerClick }) => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     className="map-tiles"
                 />
-                {crashes.map((crash) => (
+                <MapBounds crashes={crashes} />
+                {jitteredCrashes.map((crash) => (
                     <Marker
                         key={crash.event_id}
-                        position={[crash.location.coordinates[1], crash.location.coordinates[0]]}
+                        position={[crash.displayLat, crash.displayLon]}
                         eventHandlers={{
                             click: () => onMarkerClick && onMarkerClick(crash),
                         }}
